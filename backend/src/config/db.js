@@ -7,7 +7,7 @@ const connectedDB = async () => {
         }); 
     } catch (error) {
         console.error("MongoDB connection failed:", error.message);
-        process.exit(1);
+        process.exit(1); // process code 1 means failure while 0 means success
     }
 }
 
