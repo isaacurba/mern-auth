@@ -1,28 +1,27 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import connectedDB from '../src/config/db.js';
+import connectedDB from './config/db.js'; 
+import productRoute from './productRoute/product.route.js'; 
 
-const app = express();
 dotenv.config();
-
+const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors(
-    {
-        origin: process.env.CLIENT_URL,
-        credentials: true
-    }
-))
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true
+}));
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json());
+// Routes
+app.get("/", (req, res) => res.send("Hello World"));
+app.use("/api/products", productRoute); 
 
-app.get("/", (req, res)=>{
-    res.send("Hello World");
-})
-
-app.listen(PORT, ()=>{
-    connectedDB().then(() => {
-        console.log(`Server listening on port http://localhost:${PORT}`);
+// Connect DB then start server
+connectedDB().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server listening on http://localhost:${PORT}`);
     });
-})
+}).catch(err => console.log("DB Connection Error:", err));
