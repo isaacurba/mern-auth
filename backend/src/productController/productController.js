@@ -21,8 +21,11 @@ export const createProduct = async (req, res) => {
 
 
 export const getAllProducts = async (req, res) => {
+
+    const { userId } = req.query;
+    const filter = userId ? { userId } : {};
     try {
-        const products = await Product.find({})
+        const products = await Product.find(filter).sort({ createdAt: -1 })
         res.status(200).json({success: true, data: products})
     } catch (error) {
         console.error("Error getting all products:", error.message)
