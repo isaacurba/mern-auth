@@ -18,12 +18,17 @@ export const useProductStore = create((set) => ({
     createProduct: async (newProduct) => {
         set({ loading: true });
         try {
+            // ProductsAPI now returns response.data directly
             const response = await ProductsAPI.create(newProduct);
-            // Optimistic update: Add the new product to the current list
-            set((state) => ({ 
-                products: [response.data, ...state.products], 
-                loading: false 
-            }));
+            const createdProduct = response?.data;
+            if (createdProduct && createdProduct._id) {
+                set((state) => ({ 
+                    products: [createdProduct, ...state.products], 
+                    loading: false 
+                }));
+            } else {
+                set({ loading: false });
+            }
             return { success: true, message: "Product created successfully" }
         } catch (err) {
             set({ error: err.message, loading: false });
@@ -33,8 +38,12 @@ export const useProductStore = create((set) => ({
     fetchProducts: async (userId) => {
         set({ loading: true, error: null });
         try {
+            // ProductsAPI now returns response.data directly
             const response = await ProductsAPI.list(userId);
-            set({ products: response.data, loading: false });
+            const products = response?.data || [];
+            // Filter out any null/undefined entries
+            const validProducts = Array.isArray(products) ? products.filter(p => p && p._id) : [];
+            set({ products: validProducts, loading: false });
         } catch (err) {
             set({ error: err.message || "Failed to fetch", loading: false });
         }
@@ -42,10 +51,14 @@ export const useProductStore = create((set) => ({
 
     updateProduct: async (id, updatedData) => {
         try {
+            // ProductsAPI now returns response.data directly
             const response = await ProductsAPI.update(id, updatedData);
-            set((state) => ({
-                products: state.products.map((p) => (p._id === id ? response.data : p)),
-            }));
+            const updated = response?.data;
+            if (updated && updated._id) {
+                set((state) => ({
+                    products: state.products.map((p) => (p._id === id ? updated : p)),
+                }));
+            }
         } catch (err) {
             set({ error: err.message });
         }
