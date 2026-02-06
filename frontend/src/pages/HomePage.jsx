@@ -79,15 +79,17 @@ const HomePage = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {products.map((product) => (
+                {products.map((product) => {
+                  if (!product || !product._id) return null;
+                  return (
                   <div
                     key={product._id}
                     className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
                   >
                     <div className="relative h-48 overflow-hidden bg-slate-100">
                       <img
-                        src={product.image}
-                        alt={product.name}
+                        src={product.image || ""}
+                        alt={product.name || "Product"}
                         className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                       />
                       <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 shadow">
@@ -114,14 +116,15 @@ const HomePage = () => {
                         </button>
                         {/* Open confirmation modal instead of deleting immediately */}
                         <button 
-                        onClick={()=> setProductToDelete(product)}
-                        className="flex-1 rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-800">
+                          onClick={()=> setProductToDelete(product)}
+                          className="flex-1 rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-800">
                           Delete
                         </button>
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -207,4 +210,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage
+export default HomePage;
