@@ -1,7 +1,9 @@
 import axios from "axios";
 import toast from "react-hot-toast"; 
 
-const API = import.meta.env.PROD ? import.meta.env.VITE_API_URL : "/api";              
+// Use the backend proxy in dev and the same-origin /api in prod builds.
+// This avoids relying on VITE_API_URL being set in production.
+const API = "/api";              
 
 const client = axios.create({
     baseURL: API,
@@ -27,7 +29,7 @@ client.interceptors.response.use(
 
 export const ProductsAPI = {
     list : async (userId = null) => {
-        // Shorthand { userId } works here
+        // Keep response shape consistent across all API calls
         const response = await client.get("/products", { params: userId ? { userId } : {} });
         return response.data;
     },
