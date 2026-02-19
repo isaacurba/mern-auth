@@ -1,6 +1,6 @@
 import Product from "../models/product.model.js";
 
-// /api/products  
+//CREATE
 export const createProduct = async (req, res) => { 
     const product = req.body;
 
@@ -19,7 +19,7 @@ export const createProduct = async (req, res) => {
     };
 };
 
-
+//READ
 export const getAllProducts = async (req, res) => {
 
     const { userId } = req.query;
@@ -33,6 +33,18 @@ export const getAllProducts = async (req, res) => {
     }
 }
 
+export const getProductsById = async (req, res) => { 
+    const { id } = req.params;
+    try {
+        const product = await Product.findById(id)
+        res.status(200).json({success: true, data: product})
+    } catch (error) {
+        console.error("Error getting product:", error.message)
+        res.status(500).json({success: false, message: "server error"})
+    }
+}
+
+//UPDATE
 export const updateProduct = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body; 
@@ -59,7 +71,7 @@ export const updateProduct = async (req, res) => {
     }
 };
 
-
+//DELETE
 export const deleteProduct = async (req, res) => {
     const { id } = req.params;
 
